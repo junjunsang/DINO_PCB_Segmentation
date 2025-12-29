@@ -3,7 +3,8 @@ name = "dino-pcb-segmentation"
 version = "0.1.0"
 description = "PCB Defect Segmentation using DINO and U-Net"
 readme = "README.md"
-requires-python = ">=3.10"
+# [핵심 수정 1] 파이썬 버전을 3.10 ~ 3.12 미만으로 고정 (3.14 같은 미래 버전 무시)
+requires-python = ">=3.10, <3.12"
 license = {text = "MIT"}
 authors = [
     {name = "User", email = "user@example.com"}
@@ -11,29 +12,39 @@ authors = [
 
 dependencies = [
     "albumentations>=1.4.0",
-    "ipykernel>=6.29.0",  
+    "ipykernel>=6.29.0",
     "matplotlib>=3.8.0",
     "notebook>=7.0.0",
-    "numpy>=1.26.0",     
+    "numpy>=1.26.0",
     "opencv-python>=4.9.0",
     "pandas>=2.2.0",
     "pillow>=10.2.0",
     "scipy>=1.12.0",
     "segmentation-models-pytorch>=0.3.3",
     "timm>=0.9.12",
+    "tqdm>=4.66.0",
+    "huggingface-hub>=0.20.0",
+    # Torch 관련 패키지는 아래 [tool.uv.sources]에서 버전을 관리합니다.
     "torch>=2.5.1",
     "torchvision>=0.20.1",
-    "torchaudio>=2.5.1",
-    "tqdm>=4.66.0",
-    "huggingface-hub>=0.20.0"
+    "torchaudio>=2.5.1"
 ]
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
-#gpu 안잡힐때
-# [[tool.uv.index]]
-# name = "pytorch-cu121"
-# url = "https://download.pytorch.org/whl/cu121"
-# explicit = true
+# [핵심 수정 2] 터미널에서 칠 필요 없이 파일에 GPU 주소 저장
+[[tool.uv.index]]
+name = "pytorch-cu121"
+url = "https://download.pytorch.org/whl/cu121"
+explicit = true
+
+[tool.uv.sources]
+torch = { index = "pytorch-cu121" }
+torchvision = { index = "pytorch-cu121" }
+torchaudio = { index = "pytorch-cu121" }
+
+# [핵심 수정 3] 프로젝트 폴더 인식 문제 해결
+[tool.hatch.build.targets.wheel]
+packages = ["."]
